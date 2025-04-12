@@ -19,15 +19,15 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String full_name;
+    private String fullName;  //
     private String location;
-    private String created_at;
+    private String createdAt; //
 //    private String
     private String email;
     private String password;
 
-    private String profile_image;
-    private String cover_image;
+    private String profileImage; //
+    private String coverImage; //
     private String bio;
     private String username;
 //    private boolean login_with_google; // in future to implement oAuth

@@ -4,6 +4,7 @@ package com.project.TwitterClone.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,14 +25,20 @@ public class Tweet {
     private List<Like>likes = new ArrayList<>();
 
     @OneToMany
-    private List<Tweet>reply_tweets = new ArrayList<>();
+    private List<Tweet>replyTweets = new ArrayList<>(); //
 
     @ManyToMany
-    private List<User>retweet_user = new ArrayList<>();
+    private List<User>retweetUser = new ArrayList<>(); //
 
     @ManyToOne
     private Tweet reply_to;
 
-    private boolean is_reply; // is this tweet a reply
-    private boolean is_tweet; // if not a reply then a tweet
+    private LocalDateTime createdAt;
+
+
+    @Column(name = "is_reply")
+    private boolean isReply;
+
+    @Column(name = "is_tweet")
+    private boolean isTweet; // if not a reply then a tweet
 }
