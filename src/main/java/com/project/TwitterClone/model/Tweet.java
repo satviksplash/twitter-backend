@@ -31,7 +31,7 @@ public class Tweet {
     private List<User>retweetUser = new ArrayList<>(); //
 
     @ManyToOne
-    private Tweet reply_to;
+    private Tweet replyTo; // reply_to
 
     private LocalDateTime createdAt;
 
