@@ -28,6 +28,9 @@ public class TweetController {
 
 
     @PostMapping("/create")
+
+    // passing Tweet from frontend
+    // need tto change it
     public ResponseEntity<TweetDto> createTweet(@RequestBody Tweet req, @RequestHeader("Authorization") String jwt)
             throws UserException, TweetException {
 
