@@ -30,7 +30,7 @@ public class UserController {
         return new ResponseEntity<>(userDto,HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/profile/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<UserDto>getUserId(@PathVariable Long userId, @RequestHeader("Authorization") String jwt) throws UserException{
         User req_user = userService.findUserProfileByJwt(jwt);
         User user = userService.findUserById(userId);

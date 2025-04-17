@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.project.TwitterClone.Exception.ErrorMessages.USER_NOT_FOUND_EMAIL;
+import static com.project.TwitterClone.Exception.ErrorMessages.USER_NOT_FOUND_ID;
+
 @Service
 public class UserServiceImpl implements UserService{
     @Autowired
@@ -19,7 +22,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public User findUserById(Long userId) throws UserException {
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new UserException("user not found with id " + userId));
+                .orElseThrow(()-> new UserException(USER_NOT_FOUND_ID + userId));
 
         return  user;
     }
@@ -28,7 +31,8 @@ public class UserServiceImpl implements UserService{
     public User findUserProfileByJwt(String jwt) throws UserException {
         String email  = jwtProvider.getEmailFromToken(jwt);
         User user  = userRepository.findByEmail(email);
-        if(user == null)  throw new UserException("User not found with  email "+ email);
+        System.out.println(email);
+        if(user == null)  throw new UserException(USER_NOT_FOUND_EMAIL+ email);
         return user;
     }
 

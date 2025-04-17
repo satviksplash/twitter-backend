@@ -16,6 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import static com.project.TwitterClone.Exception.ErrorMessages.EMAIL_ALREADY_USED;
+import static com.project.TwitterClone.Exception.ErrorMessages.INVALID_CREDENTIALS;
+
 
 @Service
 public class AuthServiceImpl implements AuthService{
@@ -38,13 +41,14 @@ public class AuthServiceImpl implements AuthService{
         User isEmailExist = userRepository.findByEmail(email);
 
         if(isEmailExist!=null){
-            throw new UserException("Email already used for another account");
+            throw new UserException(EMAIL_ALREADY_USED);
         }
-        User createdUser = new User();
-        createdUser.setEmail(email);
-        createdUser.setPassword(passwordEncoder.encode(password));
-        createdUser.setCreatedAt(created_at);
-        createdUser.setFullName(full_name);
+        User createdUser = User.builder()
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .createdAt(created_at)
+                .fullName(full_name)
+                .build();
 
         User savedUser = userRepository.save(createdUser);
 
@@ -66,11 +70,11 @@ public class AuthServiceImpl implements AuthService{
     private Authentication authenticate(String username, String password) {
         UserDetails userDetails = customUserDetailsServiceImpl.loadUserByUsername(username);
         if(userDetails == null){
-            throw new BadCredentialsException("Invalid username");
+            throw new BadCredentialsException(INVALID_CREDENTIALS);
         }
 
         if(!passwordEncoder.matches(password,userDetails.getPassword())){
-            throw new BadCredentialsException("Invalid email or password");
+            throw new BadCredentialsException(INVALID_CREDENTIALS);
         }
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }

@@ -2,10 +2,14 @@ package com.project.TwitterClone.model;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "likes")
 public class Like {
     @Id

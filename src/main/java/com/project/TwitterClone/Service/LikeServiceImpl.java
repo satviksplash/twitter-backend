@@ -31,14 +31,14 @@ public class LikeServiceImpl implements LikeService{
             return isLikeExist;
         }
         Tweet tweet = tweetService.findById(tweedId);
-        Like like = new Like();
-        like.setTweet(tweet);
-        like.setUser(user);
+        Like like = Like.builder()
+                .tweet(tweet)
+                .user(user)
+                .build();
 
-        Like savedLike = likeRepository.save(like);
-//        tweet.getLikes().add(like);
+        //        tweet.getLikes().add(like);
 //        tweetRepository.save(tweet);
-        return savedLike;
+        return likeRepository.save(like);
     }
 
     @Override

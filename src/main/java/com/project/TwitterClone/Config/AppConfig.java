@@ -46,7 +46,7 @@ public class AppConfig {
                 CorsConfiguration config = new CorsConfiguration();
 
                 config.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // React frontend origin
-                config.setAllowedMethods(Collections.singletonList("*"));
+                config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                 config.setAllowedHeaders(Collections.singletonList("*"));
                 config.setAllowCredentials(true);
                 config.setExposedHeaders(Arrays.asList("Authorization"));

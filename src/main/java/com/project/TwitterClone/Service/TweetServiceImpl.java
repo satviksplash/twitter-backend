@@ -4,13 +4,18 @@ import com.project.TwitterClone.Exception.TweetException;
 import com.project.TwitterClone.Exception.UserException;
 import com.project.TwitterClone.Repository.TweetRepository;
 import com.project.TwitterClone.Request.TweetReplyRequest;
+import com.project.TwitterClone.dto.TweetDto;
 import com.project.TwitterClone.model.Tweet;
 import com.project.TwitterClone.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static com.project.TwitterClone.Exception.ErrorMessages.CANNOT_DELETE_TWEET;
+import static com.project.TwitterClone.Exception.ErrorMessages.TWEET_NOT_FOUND;
 
 @Service
 public class TweetServiceImpl implements TweetService {
@@ -19,15 +24,15 @@ public class TweetServiceImpl implements TweetService {
     private TweetRepository tweetRepository;
 
     @Override
-    public Tweet createTweet(Tweet req, User user) throws UserException {
-       Tweet tweet = new Tweet();
-       tweet.setContent(req.getContent());
-       tweet.setImage(req.getImage());
-       tweet.setCreatedAt(req.getCreatedAt());
-       tweet.setUser(user);
-       tweet.setReply(false);
-       tweet.setTweet(true);
-
+    public Tweet createTweet(TweetDto req, User user) throws UserException {
+        Tweet tweet = Tweet.builder()
+                .content(req.getContent())
+                .image(req.getImage())
+                .createdAt(req.getCreatedAt())
+                .user(user)
+                .isReply(false)
+                .isTweet(true)
+                .build();
        return tweetRepository.save(tweet);
     }
 
@@ -42,6 +47,7 @@ public class TweetServiceImpl implements TweetService {
         boolean modified;
         Tweet tweet = findById(tweetId);
         if(tweet.getRetweetUser().contains(user)){
+//            tweet.setUser(user);
             tweet.getRetweetUser().remove(user); // un - retweet
         }else{
             tweet.getRetweetUser().add(user);
@@ -52,14 +58,14 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public Tweet findById(Long tweetId) throws TweetException {
        return tweetRepository.findById(tweetId)
-               .orElseThrow(()-> new TweetException("Tweet not found with id "+ tweetId));
+               .orElseThrow(()-> new TweetException(TWEET_NOT_FOUND+ tweetId));
     }
 
     @Override
     public void deleteTweetById(Long tweetId, Long userId) throws UserException, TweetException {
         Tweet tweet = findById(tweetId);
         if(!userId.equals(tweet.getUser().getId())){
-            throw new UserException("Cannot delete another user's tweet");
+            throw new TweetException(CANNOT_DELETE_TWEET);
         }
         tweetRepository.deleteById(tweet.getId());
     }
@@ -69,14 +75,15 @@ public class TweetServiceImpl implements TweetService {
     public Tweet createReply(TweetReplyRequest req, User user) throws TweetException {
         Tweet replyTo = findById(req.getTweetId()); // The tweet being replied to
 
-        Tweet reply = new Tweet();
-        reply.setContent(req.getContent());
-        reply.setImage(req.getImage());
-        reply.setCreatedAt(req.getCreatedAt());
-        reply.setUser(user);
-        reply.setReply(true);
-        reply.setTweet(false);
-        reply.setReplyTo(replyTo);
+        Tweet reply = Tweet.builder()
+                .content(req.getContent())
+                .image(req.getImage())
+                .createdAt(LocalDateTime.now())
+                .user(user)
+                .isReply(true)
+                .isTweet(false)
+                .replyTo(replyTo)
+                .build();
 
         Tweet savedReply = tweetRepository.save(reply);
 
@@ -89,7 +96,7 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public List<Tweet> getUserTweets(User user) {
-        return tweetRepository.findByRetweetUserContainingOrUser_IdAndIsTweetTrueOrderByCreatedAtDesc(user, user.getId());
+        return tweetRepository.findByRetweetUserContainsOrUser_IdAndIsTweetTrueOrderByCreatedAtDesc(user, user.getId());
     }
 
     @Override

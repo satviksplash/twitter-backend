@@ -26,12 +26,10 @@ public class TweetController {
     @Autowired
     private UserService userService;
 
-
-    @PostMapping("/create")
-
     // passing Tweet from frontend
-    // need tto change it
-    public ResponseEntity<TweetDto> createTweet(@RequestBody Tweet req, @RequestHeader("Authorization") String jwt)
+    // need to change it
+    @PostMapping("/create")
+    public ResponseEntity<TweetDto> createTweet(@RequestBody TweetDto req, @RequestHeader("Authorization") String jwt)
             throws UserException, TweetException {
 
         User user = userService.findUserProfileByJwt(jwt);
@@ -53,7 +51,7 @@ public class TweetController {
 
         TweetDto tweetDto = TweetDtoMapper.toTweetDto(tweet, user);
 
-        return new ResponseEntity<>(tweetDto, HttpStatus.CREATED);
+        return new ResponseEntity<TweetDto>(tweetDto, HttpStatus.CREATED);
     }
 
     @PutMapping("/{tweetId}/retweet")
@@ -96,7 +94,7 @@ public class TweetController {
     }
 
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<TweetDto>> getAllTweets(@RequestHeader("Authorization") String jwt)
             throws UserException {
 
@@ -114,10 +112,11 @@ public class TweetController {
             throws UserException {
 
         User user = userService.findUserProfileByJwt(jwt);
+        User user1 = userService.findUserById(userId);
 
-        List<Tweet> tweet = tweetService.getUserTweets(user);
+        List<Tweet> tweet = tweetService.getUserTweets(user1);
 
-        List<TweetDto> tweetDto = TweetDtoMapper.toTweetDtos(tweet, user);
+        List<TweetDto> tweetDto = TweetDtoMapper.toTweetDtos(tweet, user1);
 
         return new ResponseEntity<>(tweetDto, HttpStatus.OK);
     }

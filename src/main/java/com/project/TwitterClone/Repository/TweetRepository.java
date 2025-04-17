@@ -10,7 +10,7 @@ import java.util.List;
 public interface TweetRepository extends JpaRepository<Tweet, Long> {
 
     public List<Tweet> findAllByIsTweetTrueOrderByCreatedAtDesc();
-    List<Tweet> findByRetweetUserContainingOrUser_IdAndIsTweetTrueOrderByCreatedAtDesc(User user, Long userId);
+    List<Tweet> findByRetweetUserContainsOrUser_IdAndIsTweetTrueOrderByCreatedAtDesc(User user, Long userId);
 
     List<Tweet> findByLikesContainingOrderByCreatedAtDesc(User user);
 

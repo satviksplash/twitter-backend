@@ -3,6 +3,7 @@ package com.project.TwitterClone.Service;
 import com.project.TwitterClone.Exception.TweetException;
 import com.project.TwitterClone.Exception.UserException;
 import com.project.TwitterClone.Request.TweetReplyRequest;
+import com.project.TwitterClone.dto.TweetDto;
 import com.project.TwitterClone.model.Tweet;
 import com.project.TwitterClone.model.User;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 public interface TweetService {
 
-    public Tweet createTweet(Tweet req, User user) throws UserException;
+    public Tweet createTweet(TweetDto req, User user) throws UserException;
 
     public List<Tweet> findAllTweets();
     public Tweet reTweet(Long tweetId, User user) throws UserException, TweetException;
