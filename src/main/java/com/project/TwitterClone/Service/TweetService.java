@@ -13,7 +13,7 @@ public interface TweetService {
 
     public Tweet createTweet(TweetDto req, User user) throws UserException;
 
-    public List<Tweet> findAllTweets();
+    public List<Tweet> findAllTweets(User user);
     public Tweet reTweet(Long tweetId, User user) throws UserException, TweetException;
     public Tweet findById(Long tweetId) throws TweetException;
 

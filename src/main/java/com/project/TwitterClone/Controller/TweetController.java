@@ -100,9 +100,11 @@ public class TweetController {
 
         User user = userService.findUserProfileByJwt(jwt);
 
-        List<Tweet> tweet = tweetService.findAllTweets();
+        List<Tweet> tweets = tweetService.findAllTweets(user);
 
-        List<TweetDto> tweetDto = TweetDtoMapper.toTweetDtos(tweet, user);
+
+
+        List<TweetDto> tweetDto = TweetDtoMapper.toTweetDtos(tweets, user);
 
         return new ResponseEntity<>(tweetDto, HttpStatus.OK);
     }

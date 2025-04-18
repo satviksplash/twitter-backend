@@ -11,8 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.project.TwitterClone.Exception.ErrorMessages.CANNOT_DELETE_TWEET;
 import static com.project.TwitterClone.Exception.ErrorMessages.TWEET_NOT_FOUND;
@@ -37,9 +40,19 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public List<Tweet> findAllTweets() {
+    public List<Tweet> findAllTweets(User user) {
 
-        return tweetRepository.findAllByIsTweetTrueOrderByCreatedAtDesc();
+        List<Tweet> tweets = tweetRepository.findAllByIsTweetTrueOrderByCreatedAtDesc();
+        Set<Long> followingIds = user.getFollowings()
+                .stream()
+                .map(User::getId)
+                .collect(Collectors.toSet());
+
+        return tweets.stream()
+                .sorted(Comparator
+                        .comparing((Tweet t) -> !followingIds.contains(t.getUser().getId()))
+                        .thenComparing(Tweet::getCreatedAt, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
     }
 
     @Override
