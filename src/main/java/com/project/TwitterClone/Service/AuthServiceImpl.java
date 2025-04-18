@@ -61,10 +61,14 @@ public class AuthServiceImpl implements AuthService{
     public AuthResponse signIn(LoginDto user) throws UserException{
         String username = user.getEmail();
         String password = user.getPassword();
-        Authentication authentication = authenticate(username, password);
-        String token = jwtProvider.generateToken(authentication);
+        try{
+            Authentication authentication = authenticate(username, password);
+            String token = jwtProvider.generateToken(authentication);
+            return new AuthResponse(token, true);
+        }catch(BadCredentialsException e){
+            throw new UserException(INVALID_CREDENTIALS);
+        }
 
-        return new AuthResponse(token, true);
     }
 
     private Authentication authenticate(String username, String password) {
