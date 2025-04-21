@@ -100,13 +100,13 @@ public class TweetController {
 
         User user = userService.findUserProfileByJwt(jwt);
 
-        List<Tweet> tweets = tweetService.findAllTweets(user);
+        List<TweetDto> tweets = tweetService.findAllTweets(user);
 
 
 
-        List<TweetDto> tweetDto = TweetDtoMapper.toTweetDtos(tweets, user);
+//        List<TweetDto> tweetDto = TweetDtoMapper.toTweetDtos(tweets, user);
 
-        return new ResponseEntity<>(tweetDto, HttpStatus.OK);
+        return new ResponseEntity<>(tweets, HttpStatus.OK);
     }
 
     @GetMapping("/user/{userId}")

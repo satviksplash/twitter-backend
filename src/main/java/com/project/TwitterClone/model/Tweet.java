@@ -2,11 +2,14 @@ package com.project.TwitterClone.model;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Tweet {
+public class Tweet implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -35,10 +38,12 @@ public class Tweet {
     private String image;
 
     @OneToMany(mappedBy = "tweet", cascade = CascadeType.ALL)
+    @JsonManagedReference
     @Builder.Default
     private List<Like>likes = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "replyTo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     @Builder.Default
     private List<Tweet>replyTweets = new ArrayList<>(); //
 
@@ -48,6 +53,7 @@ public class Tweet {
 
     @ManyToOne
     @ToString.Exclude
+    @JsonIgnore
     private Tweet replyTo; // reply_to
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -59,4 +65,14 @@ public class Tweet {
 
     @Column(name = "is_tweet")
     private boolean isTweet; // if not a reply then a tweet
+
+    public void addReply(Tweet reply) {
+        replyTweets.add(reply);
+        reply.setReplyTo(this);
+    }
+
+    public void removeReply(Tweet reply) {
+        replyTweets.remove(reply);
+        reply.setReplyTo(null);
+    }
 }

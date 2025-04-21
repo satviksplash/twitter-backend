@@ -1,8 +1,12 @@
 package com.project.TwitterClone.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.io.Serializable;
 
 @Entity
 @Getter
@@ -11,7 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "likes")
-public class Like {
+public class Like implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -20,6 +24,7 @@ public class Like {
     private User user;
 
     @ManyToOne
+    @JsonBackReference
     private Tweet tweet;
 
 }

@@ -24,6 +24,7 @@ public class LikeServiceImpl implements LikeService{
 
     @Override
     public Like likeTweet(Long tweedId, User user) throws TweetException {
+        tweetService.invalidateUserTimelines();
         Like isLikeExist = likeRepository.isLikeExist(user.getId(), tweedId);
         if(isLikeExist!=null){
             // unlike

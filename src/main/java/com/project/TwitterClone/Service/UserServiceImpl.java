@@ -19,6 +19,9 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private JwtProvider jwtProvider;
 
+    @Autowired
+    private TweetService tweetService;
+
     @Override
     public User findUserById(Long userId) throws UserException {
         User user = userRepository.findById(userId)
@@ -53,6 +56,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User followUser(Long userId, User user) throws UserException {
+        tweetService.invalidateUserTimelines();
         User followToUser = findUserById(userId);
 
         if(user.getFollowings().contains(followToUser) && followToUser.getFollowers().contains(user)){
