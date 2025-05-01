@@ -6,6 +6,8 @@ import com.project.TwitterClone.Request.TweetReplyRequest;
 import com.project.TwitterClone.dto.TweetDto;
 import com.project.TwitterClone.model.Tweet;
 import com.project.TwitterClone.model.User;
+import com.project.TwitterClone.response.TweetPageResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -26,4 +28,6 @@ public interface TweetService {
     List<Tweet> findTweetsLikedByUser(User user); // likes contain user
 
     public void invalidateUserTimelines();
+
+    public TweetPageResponse findAllTweetsPaginated(User user, int page, int size) throws UserException;
 }

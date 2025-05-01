@@ -8,9 +8,14 @@ import com.project.TwitterClone.dto.TweetDto;
 import com.project.TwitterClone.dto.mapper.TweetDtoMapper;
 import com.project.TwitterClone.model.Tweet;
 import com.project.TwitterClone.model.User;
+import com.project.TwitterClone.response.TweetPageResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -204,4 +209,57 @@ public class TweetServiceImpl implements TweetService {
         Set<String> keys = redisTemplate.keys("tweets:user:*");
         redisTemplate.delete(keys);
     }
+
+    @Override
+    public TweetPageResponse findAllTweetsPaginated(User user, int page, int size) throws UserException {
+        String cacheKey = "tweets:user:" + user.getId() + ":page:" + page + ":size:" + size;
+
+        // Try to get from cache
+        try {
+            TweetPageResponse cachedResponse = (TweetPageResponse) redisTemplate.opsForValue().get(cacheKey);
+            if (cachedResponse != null) {
+                log.info("Cache hit for {}", cacheKey);
+                return cachedResponse;
+            }
+            log.info("Cache miss for {}", cacheKey);
+        } catch (Exception e) {
+            log.warn("Cache error: {}", e.getMessage());
+        }
+        // If cache is empty or an error occurred, fetch from the database
+        // Invalidate the cache for the user when a new tweet is created
+
+
+
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Tweet> tweetPage = tweetRepository.findAllByIsTweetTrue(pageRequest);
+        List<Tweet> tweets = tweetPage.getContent();
+
+        Set<Long> followingIds = user.getFollowings()
+                .stream()
+                .map(User::getId)
+                .collect(Collectors.toSet());
+
+        List<Tweet> sortedTweets = tweets.stream()
+                .sorted(Comparator
+                        .comparing((Tweet t) -> !followingIds.contains(t.getUser().getId()))
+                        .thenComparing(Tweet::getCreatedAt, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+
+        List<TweetDto> tweetDtos = TweetDtoMapper.toTweetDtos(sortedTweets, user);
+
+        TweetPageResponse response = TweetPageResponse.builder()
+                .content(tweetDtos)
+                .totalElements(tweetPage.getTotalElements())
+                .totalPages(tweetPage.getTotalPages())
+                .build();
+        // Cache it safely
+        try {
+            redisTemplate.opsForValue().set(cacheKey, response, 5, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            log.warn("error while caching: {}", e.getMessage());
+        }
+
+        return response;
+    }
+
 }

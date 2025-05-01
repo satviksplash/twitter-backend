@@ -11,10 +11,14 @@ import com.project.TwitterClone.dto.mapper.TweetDtoMapper;
 import com.project.TwitterClone.model.Tweet;
 import com.project.TwitterClone.model.User;
 import com.project.TwitterClone.response.ApiResponse;
+import com.project.TwitterClone.response.TweetPageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+
+
 
 import java.util.List;
 
@@ -136,4 +140,14 @@ public class TweetController {
         return new ResponseEntity<>(tweetDto, HttpStatus.OK);
     }
 
+    @GetMapping("/paginated")
+    public ResponseEntity<TweetPageResponse> getAllTweetsPaginated(
+            @RequestHeader("Authorization") String jwt,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) throws UserException {
+        User user = userService.findUserProfileByJwt(jwt);
+        TweetPageResponse tweetDtos = tweetService.findAllTweetsPaginated(user, page, size);
+        return ResponseEntity.ok(tweetDtos);
+    }
 }

@@ -6,6 +6,7 @@ import com.project.TwitterClone.dto.LoginDto;
 import com.project.TwitterClone.dto.SignupDto;
 
 import com.project.TwitterClone.response.AuthResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> createUserHandler(@RequestBody SignupDto user) throws UserException {
+    public ResponseEntity<AuthResponse> createUserHandler(@Valid @RequestBody SignupDto user) throws UserException {
         AuthResponse authResponse = authService.signup(user);
         return new ResponseEntity<AuthResponse>(authResponse, HttpStatus.CREATED);
 

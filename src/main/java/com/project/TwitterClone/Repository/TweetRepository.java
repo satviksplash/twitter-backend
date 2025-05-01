@@ -2,6 +2,8 @@ package com.project.TwitterClone.Repository;
 
 import com.project.TwitterClone.model.Tweet;
 import com.project.TwitterClone.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,4 +18,6 @@ public interface TweetRepository extends JpaRepository<Tweet, Long> {
 
     @Query("Select t from Tweet t JOIN t.likes l where l.user.id =:userId")
     List<Tweet>findByLikesUser_Id(Long userId);
+
+    Page<Tweet> findAllByIsTweetTrue(PageRequest pageRequest);
 }

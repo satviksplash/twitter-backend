@@ -134,6 +134,4 @@ public class TweetServiceImplTest {
 
         verify(redisTemplate).delete(anySet());
     }
-
-
 }
